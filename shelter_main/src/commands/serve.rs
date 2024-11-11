@@ -1,9 +1,9 @@
 use crate::settings::Settings;
-use axum::handler::HandlerWithoutStateExt;
-use axum::Router;
 use clap::{value_parser, Arg, ArgMatches, Command};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::sync::Arc;
 use tower_http::trace::TraceLayer;
+use crate::state::ApplicationState;
 
 pub fn configure() -> Command {
     Command::new("serve").about("Start HTTP server").arg(
@@ -27,14 +27,17 @@ pub fn handle(matches: &ArgMatches, settings: &Settings) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn start_tokio(port: u16, _settings: &Settings) -> anyhow::Result<()> {
+fn start_tokio(port: u16, settings: &Settings) -> anyhow::Result<()> {
     tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
         .unwrap()
         .block_on(async move {
+            let state = Arc::new(ApplicationState::new(settings)?);
+
             let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), port);
-            let routes = crate::api::configure()
+
+            let routes = crate::api::configure(state)
                 .layer(TraceLayer::new_for_http());
 
             tracing::info!("starting axum on port {}", port);
