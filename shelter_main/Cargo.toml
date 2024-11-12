@@ -19,3 +19,6 @@ tower-http = { version = "0.3.5", features = ["trace"] }
 arc-swap = "1.7.1"
 sea-orm = { version = "0.11", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
 migration = { path = "../migration" }
+entity = { path = "../entity" }
+password-hash = "0.5"
+argon2 = "0.5"
