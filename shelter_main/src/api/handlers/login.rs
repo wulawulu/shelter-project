@@ -1,3 +1,4 @@
+use crate::api::middleware::json::CustomJson;
 use crate::api::request::login::LoginRequest;
 use crate::api::response::error::{AppError, Status};
 use crate::api::response::login::LoginResponse;
@@ -12,8 +13,17 @@ use jsonwebtoken::{encode, EncodingKey, Header};
 use password_hash::{PasswordHash, PasswordVerifier};
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use std::sync::Arc;
-use crate::api::middleware::json::CustomJson;
 
+#[utoipa::path(
+    post,
+    path = "/login",
+    tag = "login",
+    request_body = LoginRequest,
+    responses(
+        (status = 200, description = "Login success", body =LoginResponse),
+        (status = 401, description = "Unauthorized", body =ErrorResponse),
+    ),
+)]
 pub async fn login(
     State(state): State<Arc<ApplicationState>>,
     CustomJson(payload): CustomJson<LoginRequest>,

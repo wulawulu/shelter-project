@@ -1,7 +1,6 @@
 use crate::settings::Settings;
 use crate::state::ApplicationState;
 use clap::{value_parser, Arg, ArgMatches, Command};
-use opentelemetry::global::tracer;
 use opentelemetry::logs::LogError;
 use opentelemetry::trace::TraceError;
 use opentelemetry::{global, KeyValue};
